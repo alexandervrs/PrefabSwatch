@@ -1,0 +1,6 @@
+Library/
+.vscode/
+obj/
+Assembly-CSharp.csproj
+Assembly-CSharp-Editor.csproj
+PrefabSwatch.sln
