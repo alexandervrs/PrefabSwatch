@@ -1,6 +1,8 @@
 # **PrefabSwatch**
 A Unity tool that allows for fast placement of prefabs in a 2D Scene
 
+![preview](Preview.gif)
+
 # How to Use
 
 1. First Create a Prefab Swatch
