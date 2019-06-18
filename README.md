@@ -21,3 +21,6 @@ A Unity tool that allows for fast placement of prefabs in a 2D Scene
 Click on the list to select a prefab then click on the Scene to add it.
 Undo is supported if you make a mistake.
 When done, press the ESC key to return to the Unity Scene controls.
+
+Sample assets from my LDJAM game "Swordurush!"
+https://ldjam.com/events/ludum-dare/41/swordurush
