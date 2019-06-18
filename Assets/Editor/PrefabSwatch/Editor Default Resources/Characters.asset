@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Characters
   m_EditorClassIdentifier: 
   prefabs:
-  - {fileID: 5442553434638279375, guid: c63ed64c180827443aa437c7bc26b1e4, type: 3}
-  - {fileID: 9179070924374689514, guid: 251ee23a5288b5d4ab6a342e78671c86, type: 3}
-  - {fileID: 7134001214074007539, guid: 0cea875c8eb2ae24c84a4f3caa068e01, type: 3}
+  - {fileID: 3249935291199836761, guid: 9e419be19e93b4643a64b90b8f47db24, type: 3}
+  - {fileID: 2349609916432723451, guid: ada2b906eecd1cf4794635506f860d72, type: 3}
+  - {fileID: 6744142134943599641, guid: c7363d66961f5ba418dddf691f1331d8, type: 3}

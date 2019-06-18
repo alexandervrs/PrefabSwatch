@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: Background
   m_EditorClassIdentifier: 
   prefabs:
-  - {fileID: 4297567565124113912, guid: bc4cc9c9e9906b84f8cff52168bfef3f, type: 3}
-  - {fileID: 7407920159389655891, guid: 479489be6ba86b24da1d5684ea392221, type: 3}
+  - {fileID: 1571893812224319143, guid: edbc7a0bb03e7f544ba5e53446f71f1f, type: 3}
+  - {fileID: 673300754174452350, guid: 562b44a6f34a4884e8e6a596fb534a86, type: 3}
+  - {fileID: 8169409145201351008, guid: f82eac98ad95fa444811755c412d62fe, type: 3}
+  - {fileID: 5286416918383469452, guid: 3916a2b1f6ec8d545917090db7c1670b, type: 3}
