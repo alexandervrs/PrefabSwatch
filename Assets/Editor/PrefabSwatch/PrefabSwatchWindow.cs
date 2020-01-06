@@ -9,17 +9,40 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine.SceneManagement;
 using UnityEditor.Events;
-
+using UnityEditor.Experimental.SceneManagement;
 
 public class PrefabSwatchWindow : EditorWindow
 {
+
+    static KeyCode globalKeyDown;
+
+    static EditorWindow win;
+
+    static void SetEditorGlobalKeyPress()
+    {
+        globalKeyDown = Event.current.keyCode;
+    }
+
     [MenuItem("Window/Prefab Swatch...", priority = 10001)]
     static void CreateWindow()
     {
+        
+        System.Reflection.FieldInfo info = typeof(EditorApplication).GetField("globalEventHandler", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+        EditorApplication.CallbackFunction value = (EditorApplication.CallbackFunction)info.GetValue(null);
+        value += SetEditorGlobalKeyPress;
+ 
+        info.SetValue(null, value);
+        
         PrefabSwatchWindow window = GetWindow<PrefabSwatchWindow>("Prefab Swatch");
         Texture2D icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Gizmos/PrefabSwatch Icon.png");
         window.titleContent = new GUIContent("Prefab Swatch", icon);
         window.Show();
+
+        win = window;
+
+        EditorApplication.update -= UpdateState;
+		EditorApplication.update += UpdateState;
+
     }
 
     Transform parentTo;
@@ -74,14 +97,14 @@ public class PrefabSwatchWindow : EditorWindow
 
     List<GameObject> hasNotBoxCollider = new List<GameObject>();
 
-    GameObject selectedPrefab;
+    static GameObject selectedPrefab;
 
     GameObject prefabToRemove;
 
     Vector2 prefabsScrollView;
     Vector2 mousePosition;
 
-    GameObject prefabToPlaceInScene;
+    static GameObject prefabToPlaceInScene;
 
     Vector3 positionToPlaceAt;
 
@@ -153,14 +176,35 @@ public class PrefabSwatchWindow : EditorWindow
 
     }
 
-    void DeselectPrefab()
+    static void DeselectPrefab()
     {
 
         EditorApplication.delayCall += () => {
             selectedPrefab = null;
-            Repaint();
+            win.Repaint();
             Tools.current = Tool.Move;
         };
+
+    }
+
+    static void UpdateState()
+    {
+
+        PrefabStage prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+        if (prefabStage != null) {
+
+            EditorApplication.delayCall += () => {
+                DeselectPrefab();
+                ClearPlacingPrefab();
+            };
+        }
+
+
+        if (globalKeyDown == KeyCode.Escape) {
+            DeselectPrefab();
+            ClearPlacingPrefab();
+            globalKeyDown = KeyCode.None;
+        }
 
     }
 
@@ -185,10 +229,6 @@ public class PrefabSwatchWindow : EditorWindow
         if (Event.current.isMouse) {
             mousePosition = Event.current.mousePosition;
             Repaint();
-        }
-
-        if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape) {
-            DeselectPrefab();
         }
 
         EditorGUILayout.Space();
@@ -495,7 +535,7 @@ public class PrefabSwatchWindow : EditorWindow
     }
 
 
-    void ClearPlacingPrefab()
+    static void ClearPlacingPrefab()
     {
         if (prefabToPlaceInScene != null) {
             DestroyImmediate(prefabToPlaceInScene);
@@ -512,7 +552,9 @@ public class PrefabSwatchWindow : EditorWindow
         Transform t = prefabToPlaceInScene.transform;
         prefabToPlaceInScene.hideFlags = HideFlags.None;
 
-        prefabToPlaceInScene.GetComponent<SpriteRenderer>().color = originalColor;
+        if (prefabToPlaceInScene.GetComponent<SpriteRenderer>() != null) {
+            prefabToPlaceInScene.GetComponent<SpriteRenderer>().color = originalColor;
+        }
 
         if (nameSuffix != "") {
             prefabToPlaceInScene.gameObject.name = prefabToPlaceInScene.gameObject.name+nameSuffix;
@@ -624,14 +666,18 @@ public class PrefabSwatchWindow : EditorWindow
             prefabToPlaceInScene = (GameObject)PrefabUtility.InstantiatePrefab(selectedPrefab, SceneManager.GetActiveScene());
             prefabToPlaceInScene.hideFlags = HideFlags.HideAndDontSave | HideFlags.NotEditable;
 
-            originalColor = prefabToPlaceInScene.GetComponent<SpriteRenderer>().color;
+            if (prefabToPlaceInScene.GetComponent<SpriteRenderer>() != null) {
 
-            prefabToPlaceInScene.GetComponent<SpriteRenderer>().color = new Color(
-                prefabToPlaceInScene.GetComponent<SpriteRenderer>().color.r,
-                prefabToPlaceInScene.GetComponent<SpriteRenderer>().color.g,
-                prefabToPlaceInScene.GetComponent<SpriteRenderer>().color.b,
-                0.6f
-            );
+                originalColor = prefabToPlaceInScene.GetComponent<SpriteRenderer>().color;
+            
+                prefabToPlaceInScene.GetComponent<SpriteRenderer>().color = new Color(
+                    prefabToPlaceInScene.GetComponent<SpriteRenderer>().color.r,
+                    prefabToPlaceInScene.GetComponent<SpriteRenderer>().color.g,
+                    prefabToPlaceInScene.GetComponent<SpriteRenderer>().color.b,
+                    0.6f
+                );
+
+            }
         }
 
         if (prefabToPlaceInScene == null) {
@@ -701,9 +747,6 @@ public class PrefabSwatchWindow : EditorWindow
         HandleUtility.Repaint();
         Handles.color = Color.yellow;
 
-        if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape) {
-            DeselectPrefab();
-        }
 
         if (Event.current.isMouse) {
             mousePosition = Event.current.mousePosition;
@@ -812,6 +855,11 @@ public class PrefabSwatchWindow : EditorWindow
     {
 
         SpriteRenderer sprRenderer = go.GetComponent<SpriteRenderer>();
+
+        if (sprRenderer == null) {
+            return;
+        }
+
         Vector3 position           = go.transform.position;
         Vector3 scale              = go.transform.localScale;
 
