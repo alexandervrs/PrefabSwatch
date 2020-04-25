@@ -181,7 +181,7 @@ public class PrefabSwatchWindow : EditorWindow
 
         EditorApplication.delayCall += () => {
             selectedPrefab = null;
-            win.Repaint();
+            win?.Repaint();
             Tools.current = Tool.Move;
         };
 
@@ -854,9 +854,17 @@ public class PrefabSwatchWindow : EditorWindow
     void DebugDrawBbox(GameObject go, Color color)
     {
 
+        if (go == null) {
+            return;
+        }
+
         SpriteRenderer sprRenderer = go.GetComponent<SpriteRenderer>();
 
         if (sprRenderer == null) {
+            return;
+        }
+
+        if (sprRenderer.sprite == null) {
             return;
         }
 
@@ -899,6 +907,13 @@ public class PrefabSwatchWindow : EditorWindow
         Handles.DrawLine(bottomRight, bottomLeft);
         Handles.DrawLine(bottomLeft, topLeft);
 
+    }
+
+    void OnDestroy()
+    {
+        DeselectPrefab();
+        ClearPlacingPrefab();
+        globalKeyDown = KeyCode.None;
     }
 
 }

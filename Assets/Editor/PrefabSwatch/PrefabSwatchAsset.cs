@@ -1,7 +1,7 @@
 ﻿
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Assets/Editor/PrefabSwatch/Editor Default Resources/PrefabSwatch", menuName = "Prefab Swatch", order = 201)]
+[CreateAssetMenu(fileName = "Assets/PrefabSwatch", menuName = "Prefab Swatch", order = 20001)]
 public class PrefabSwatchAsset : ScriptableObject
 {
     public GameObject[] prefabs;
